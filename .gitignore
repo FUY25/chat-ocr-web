@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.env
+
+# 数据文件夹（不上传）
+傅禹铭-*/
+images/
+images_resized/
+chat_logs/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 临时文件
+*.log
+*.tmp
