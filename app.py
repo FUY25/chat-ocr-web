@@ -67,10 +67,10 @@ def process():
                 'total': total
             })
         
-        # 获取 API Key
-        api_key = os.environ.get('GEMINI_API_KEY')
+        # 获取 API Key（优先使用用户提供的，否则使用服务器配置的）
+        api_key = request.form.get('api_key') or os.environ.get('GEMINI_API_KEY')
         if not api_key:
-            return jsonify({'error': '服务器未配置 GEMINI_API_KEY'}), 500
+            return jsonify({'error': '请输入您的 Gemini API Key'}), 400
         
         # 在后台线程处理
         def process_task():

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,44 +11,44 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 40px 20px;
         }
-        
+
         .container {
             max-width: 600px;
             margin: 0 auto;
         }
-        
+
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-        
+
         h1 {
             text-align: center;
             color: #333;
             margin-bottom: 10px;
             font-size: 28px;
         }
-        
+
         .subtitle {
             text-align: center;
             color: #666;
             margin-bottom: 30px;
             font-size: 14px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
@@ -55,7 +56,7 @@
             font-weight: 500;
             font-size: 14px;
         }
-        
+
         input[type="text"] {
             width: 100%;
             padding: 12px 16px;
@@ -64,18 +65,18 @@
             font-size: 16px;
             transition: border-color 0.3s;
         }
-        
+
         input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
         }
-        
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        
+
         .upload-area {
             border: 3px dashed #ccc;
             border-radius: 15px;
@@ -85,39 +86,39 @@
             transition: all 0.3s;
             background: #fafafa;
         }
-        
+
         .upload-area:hover {
             border-color: #667eea;
             background: #f0f0ff;
         }
-        
+
         .upload-area.dragover {
             border-color: #667eea;
             background: #e8e8ff;
         }
-        
+
         .upload-icon {
             font-size: 48px;
             margin-bottom: 15px;
         }
-        
+
         .upload-text {
             color: #666;
             font-size: 16px;
         }
-        
+
         .upload-hint {
             color: #999;
             font-size: 12px;
             margin-top: 8px;
         }
-        
+
         .file-list {
             margin-top: 15px;
             max-height: 150px;
             overflow-y: auto;
         }
-        
+
         .file-item {
             display: flex;
             align-items: center;
@@ -127,20 +128,20 @@
             margin-bottom: 5px;
             font-size: 13px;
         }
-        
+
         .file-item .name {
             flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        
+
         .file-item .remove {
             color: #e74c3c;
             cursor: pointer;
             margin-left: 10px;
         }
-        
+
         .btn {
             width: 100%;
             padding: 16px;
@@ -153,28 +154,28 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
-        
+
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
-        
+
         .progress-section {
             display: none;
             margin-top: 30px;
         }
-        
+
         .progress-section.show {
             display: block;
         }
-        
+
         .progress-bar-container {
             background: #e0e0e0;
             border-radius: 10px;
@@ -182,14 +183,14 @@
             height: 8px;
             margin-bottom: 15px;
         }
-        
+
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, #667eea, #764ba2);
             width: 0%;
             transition: width 0.3s;
         }
-        
+
         .progress-log {
             background: #1e1e1e;
             border-radius: 10px;
@@ -199,35 +200,35 @@
             font-family: 'Menlo', 'Monaco', monospace;
             font-size: 12px;
         }
-        
+
         .log-item {
             color: #4ade80;
             margin-bottom: 5px;
             padding-left: 20px;
             position: relative;
         }
-        
+
         .log-item::before {
             content: '›';
             position: absolute;
             left: 5px;
             color: #667eea;
         }
-        
+
         .log-item.error {
             color: #f87171;
         }
-        
+
         .download-section {
             display: none;
             margin-top: 20px;
             text-align: center;
         }
-        
+
         .download-section.show {
             display: block;
         }
-        
+
         .download-btn {
             display: inline-flex;
             align-items: center;
@@ -240,23 +241,35 @@
             font-weight: 600;
             transition: background 0.3s;
         }
-        
+
         .download-btn:hover {
             background: #059669;
         }
-        
+
         .hidden {
             display: none;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="card">
             <h1>📱 聊天截图 OCR</h1>
             <p class="subtitle">上传截图，自动识别对话内容并生成 TXT</p>
-            
+
             <form id="ocrForm">
+                <div class="form-group"
+                    style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    <label>🔑 Gemini API Key <span
+                            style="font-weight: normal; color: #999; font-size: 12px;">(保存在浏览器本地)</span></label>
+                    <input type="password" name="api_key" id="apiKeyInput" placeholder="输入您的 Gemini API Key" required>
+                    <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                        <a href="https://aistudio.google.com/apikey" target="_blank" style="color: #667eea;">获取免费 API
+                            Key →</a>
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>城市</label>
@@ -267,7 +280,7 @@
                         <input type="text" name="house_type" placeholder="如：二手房" required>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>小区</label>
@@ -278,12 +291,12 @@
                         <input type="text" name="recipient" placeholder="如：经纪人" required>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>截图日期（直接回车使用今天）</label>
                     <input type="text" name="screenshot_date" placeholder="{{ today }}" value="{{ today }}">
                 </div>
-                
+
                 <div class="form-group">
                     <label>上传截图（最多30张）</label>
                     <div class="upload-area" id="uploadArea">
@@ -294,17 +307,17 @@
                     <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
                     <div class="file-list" id="fileList"></div>
                 </div>
-                
+
                 <button type="submit" class="btn" id="submitBtn">开始处理</button>
             </form>
-            
+
             <div class="progress-section" id="progressSection">
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="progressBar"></div>
                 </div>
                 <div class="progress-log" id="progressLog"></div>
             </div>
-            
+
             <div class="download-section" id="downloadSection">
                 <a href="#" class="download-btn" id="downloadBtn">
                     📦 下载结果 (ZIP)
@@ -312,7 +325,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         const form = document.getElementById('ocrForm');
         const uploadArea = document.getElementById('uploadArea');
@@ -324,33 +337,39 @@
         const progressLog = document.getElementById('progressLog');
         const downloadSection = document.getElementById('downloadSection');
         const downloadBtn = document.getElementById('downloadBtn');
-        
+
         let selectedFiles = [];
-        
+
+        // 从 localStorage 加载保存的 API Key
+        const savedApiKey = localStorage.getItem('gemini_api_key');
+        if (savedApiKey) {
+            document.getElementById('apiKeyInput').value = savedApiKey;
+        }
+
         // 上传区域点击
         uploadArea.addEventListener('click', () => fileInput.click());
-        
+
         // 拖拽处理
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
         });
-        
+
         uploadArea.addEventListener('dragleave', () => {
             uploadArea.classList.remove('dragover');
         });
-        
+
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
             handleFiles(e.dataTransfer.files);
         });
-        
+
         // 文件选择
         fileInput.addEventListener('change', (e) => {
             handleFiles(e.target.files);
         });
-        
+
         function handleFiles(files) {
             for (const file of files) {
                 if (file.type.startsWith('image/') && selectedFiles.length < 30) {
@@ -359,7 +378,7 @@
             }
             renderFileList();
         }
-        
+
         function renderFileList() {
             fileList.innerHTML = selectedFiles.map((file, index) => `
                 <div class="file-item">
@@ -368,12 +387,12 @@
                 </div>
             `).join('');
         }
-        
+
         function removeFile(index) {
             selectedFiles.splice(index, 1);
             renderFileList();
         }
-        
+
         function addLog(message, isError = false) {
             const item = document.createElement('div');
             item.className = 'log-item' + (isError ? ' error' : '');
@@ -381,28 +400,33 @@
             progressLog.appendChild(item);
             progressLog.scrollTop = progressLog.scrollHeight;
         }
-        
+
         // 表单提交
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             if (selectedFiles.length === 0) {
                 alert('请先上传图片');
                 return;
             }
-            
+
             // 准备数据
             const formData = new FormData();
+            const apiKey = form.api_key.value.trim();
+            formData.append('api_key', apiKey);
             formData.append('city', form.city.value);
             formData.append('house_type', form.house_type.value);
             formData.append('community', form.community.value);
             formData.append('recipient', form.recipient.value);
             formData.append('screenshot_date', form.screenshot_date.value);
-            
+
+            // 保存 API Key 到 localStorage
+            localStorage.setItem('gemini_api_key', apiKey);
+
             for (const file of selectedFiles) {
                 formData.append('images', file);
             }
-            
+
             // UI 状态
             submitBtn.disabled = true;
             submitBtn.textContent = '处理中...';
@@ -410,26 +434,26 @@
             downloadSection.classList.remove('show');
             progressLog.innerHTML = '';
             progressBar.style.width = '0%';
-            
+
             try {
                 // 发送请求
                 const response = await fetch('/api/process', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.error) {
                     throw new Error(result.error);
                 }
-                
+
                 // 监听进度
                 const eventSource = new EventSource(`/api/progress/${result.task_id}`);
-                
+
                 eventSource.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    
+
                     if (data.type === 'progress') {
                         addLog(data.message);
                         if (data.total > 0) {
@@ -440,11 +464,11 @@
                         eventSource.close();
                         addLog('✅ 处理完成！');
                         progressBar.style.width = '100%';
-                        
+
                         // 显示下载按钮
                         downloadBtn.href = `/api/download/${data.download_id}`;
                         downloadSection.classList.add('show');
-                        
+
                         submitBtn.disabled = false;
                         submitBtn.textContent = '开始处理';
                     } else if (data.type === 'error') {
@@ -454,14 +478,14 @@
                         submitBtn.textContent = '开始处理';
                     }
                 };
-                
+
                 eventSource.onerror = () => {
                     eventSource.close();
                     addLog('❌ 连接中断', true);
                     submitBtn.disabled = false;
                     submitBtn.textContent = '开始处理';
                 };
-                
+
             } catch (error) {
                 addLog('❌ ' + error.message, true);
                 submitBtn.disabled = false;
@@ -470,4 +494,5 @@
         });
     </script>
 </body>
+
 </html>
