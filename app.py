@@ -121,15 +121,23 @@ def progress(task_id):
         
         while True:
             try:
-                data = q.get(timeout=60)
-                yield f"data: {json.dumps(data)}\n\n"
+                data = q.get(timeout=30)
+                yield f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
                 
                 if data.get('type') in ('complete', 'error'):
                     break
             except queue.Empty:
+                # 发送心跳保持连接
                 yield f"data: {json.dumps({'type': 'ping'})}\n\n"
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+                break
     
-    return Response(generate(), mimetype='text/event-stream')
+    response = Response(generate(), mimetype='text/event-stream')
+    response.headers['Cache-Control'] = 'no-cache'
+    response.headers['X-Accel-Buffering'] = 'no'  # 禁用 nginx 缓冲
+    response.headers['Connection'] = 'keep-alive'
+    return response
 
 
 @app.route('/api/download/<download_id>')
