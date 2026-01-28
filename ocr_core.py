@@ -217,14 +217,12 @@ def process_ocr_workflow(
     report(f"开始处理 {total_images} 张图片", 0, total_images)
     
     # 步骤1: 检测每张图片的对方姓名并重命名
-    report("步骤1: 识别对方姓名...", 0, total_images)
+    report("正在识别对方姓名...", 0, total_images)
     
     renamed_images = []  # [(new_filename, bytes, person_name), ...]
     per_name_counter = {}
     
     for i, (orig_name, img_bytes) in enumerate(images):
-        report(f"识别姓名: {orig_name}", i + 1, total_images)
-        
         person_name = detect_name_from_image(img_bytes)
         order = per_name_counter.get(person_name, 0) + 1
         per_name_counter[person_name] = order
@@ -233,10 +231,13 @@ def process_ocr_workflow(
         ext = Path(orig_name).suffix.lower() or ".png"
         new_name = f"{city}-{house_type}-{community}-{recipient}-{person_name}-{order}{ext}"
         
+        report(f"→ {new_name}", i + 1, total_images)
+        
         renamed_images.append((new_name, img_bytes, person_name))
+        
     
     # 步骤2: 按对方姓名分组
-    report("步骤2: 分组图片...", 0, 0)
+    report("正在分组图片...", 0, 0)
     
     groups = defaultdict(list)
     for new_name, img_bytes, person_name in renamed_images:
@@ -247,21 +248,21 @@ def process_ocr_workflow(
     # 步骤3: 初始化 Gemini 客户端
     client = genai.Client(api_key=api_key)
     
-    # 步骤4: 对每组调用 Gemini OCR
-    report("步骤3: Gemini OCR 处理...", 0, len(groups))
+    # 步骤3: 对每组调用 Gemini 分析
+    report("Gemini 正在分析聊天内容...", 0, len(groups))
     
     txt_files = {}  # {filename: content}
     group_list = list(groups.items())
     
     for i, (person_name, imgs) in enumerate(group_list):
-        report(f"OCR: {person_name} ({len(imgs)} 张图片)", i + 1, len(groups))
+        report(f"正在分析: {person_name}（{len(imgs)} 张图片）", i + 1, len(groups))
         
         chat_content = ocr_images_with_gemini(imgs, client, screenshot_date)
         txt_name = f"{city}-{house_type}-{community}-{recipient}-{person_name}.txt"
         txt_files[txt_name] = chat_content
     
-    # 步骤5: 打包 ZIP
-    report("步骤4: 打包 ZIP...", 0, 0)
+    # 步骤4: 打包 ZIP
+    report("正在打包下载文件...", 0, 0)
     
     zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:

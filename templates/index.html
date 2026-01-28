@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聊天截图 OCR</title>
+    <title>聊天截图识别</title>
     <style>
         * {
             margin: 0;
@@ -16,57 +16,112 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
 
-        .container {
-            max-width: 600px;
+        .layout {
+            display: flex;
+            max-width: 1100px;
             margin: 0 auto;
+            gap: 25px;
         }
 
-        .card {
+        .main-card {
+            flex: 1;
+            max-width: 550px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 40px;
+            padding: 35px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar {
+            width: 320px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            font-size: 13px;
+            color: #444;
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .sidebar h4 {
+            color: #333;
+            margin: 18px 0 10px 0;
+            font-size: 14px;
+        }
+
+        .sidebar p,
+        .sidebar li {
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .sidebar ul {
+            padding-left: 18px;
+        }
+
+        .sidebar li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .sidebar a {
+            color: #667eea;
         }
 
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
+            margin-bottom: 8px;
+            font-size: 26px;
         }
 
         .subtitle {
             text-align: center;
             color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
+            margin-bottom: 25px;
+            font-size: 13px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #444;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
-            padding: 12px 16px;
+            padding: 11px 14px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
             transition: border-color 0.3s;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus,
+        input[type="password"]:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -74,13 +129,13 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
         }
 
         .upload-area {
             border: 3px dashed #ccc;
             border-radius: 15px;
-            padding: 40px;
+            padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
@@ -98,35 +153,35 @@
         }
 
         .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 40px;
+            margin-bottom: 10px;
         }
 
         .upload-text {
             color: #666;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .upload-hint {
             color: #999;
-            font-size: 12px;
-            margin-top: 8px;
+            font-size: 11px;
+            margin-top: 6px;
         }
 
         .file-list {
-            margin-top: 15px;
-            max-height: 150px;
+            margin-top: 12px;
+            max-height: 120px;
             overflow-y: auto;
         }
 
         .file-item {
             display: flex;
             align-items: center;
-            padding: 8px 12px;
+            padding: 6px 10px;
             background: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            font-size: 13px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-size: 12px;
         }
 
         .file-item .name {
@@ -139,17 +194,17 @@
         .file-item .remove {
             color: #e74c3c;
             cursor: pointer;
-            margin-left: 10px;
+            margin-left: 8px;
         }
 
         .btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -169,7 +224,7 @@
 
         .progress-section {
             display: none;
-            margin-top: 30px;
+            margin-top: 25px;
         }
 
         .progress-section.show {
@@ -180,8 +235,8 @@
             background: #e0e0e0;
             border-radius: 10px;
             overflow: hidden;
-            height: 8px;
-            margin-bottom: 15px;
+            height: 6px;
+            margin-bottom: 12px;
         }
 
         .progress-bar {
@@ -194,24 +249,24 @@
         .progress-log {
             background: #1e1e1e;
             border-radius: 10px;
-            padding: 15px;
-            max-height: 200px;
+            padding: 12px;
+            max-height: 160px;
             overflow-y: auto;
             font-family: 'Menlo', 'Monaco', monospace;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .log-item {
             color: #4ade80;
-            margin-bottom: 5px;
-            padding-left: 20px;
+            margin-bottom: 4px;
+            padding-left: 16px;
             position: relative;
         }
 
         .log-item::before {
             content: '›';
             position: absolute;
-            left: 5px;
+            left: 4px;
             color: #667eea;
         }
 
@@ -221,7 +276,7 @@
 
         .download-section {
             display: none;
-            margin-top: 20px;
+            margin-top: 18px;
             text-align: center;
         }
 
@@ -232,8 +287,8 @@
         .download-btn {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 30px;
+            gap: 8px;
+            padding: 12px 25px;
             background: #10b981;
             color: white;
             text-decoration: none;
@@ -249,22 +304,37 @@
         .hidden {
             display: none;
         }
+
+        @media (max-width: 900px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+
+            .main-card {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="card">
-            <h1>📱 聊天截图 OCR</h1>
+    <div class="layout">
+        <div class="main-card">
+            <h1>📱 聊天截图识别</h1>
             <p class="subtitle">上传截图，自动识别对话内容并生成 TXT</p>
 
             <form id="ocrForm">
                 <div class="form-group"
-                    style="margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    style="margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid #eee;">
                     <label>🔑 Gemini API Key <span
-                            style="font-weight: normal; color: #999; font-size: 12px;">(保存在浏览器本地)</span></label>
+                            style="font-weight: normal; color: #999; font-size: 11px;">(保存在浏览器本地)</span></label>
                     <input type="password" name="api_key" id="apiKeyInput" placeholder="输入您的 Gemini API Key" required>
-                    <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                    <div style="margin-top: 6px; font-size: 11px; color: #666;">
                         <a href="https://aistudio.google.com/apikey" target="_blank" style="color: #667eea;">获取免费 API
                             Key →</a>
                     </div>
@@ -323,6 +393,35 @@
                     📦 下载结果 (ZIP)
                 </a>
             </div>
+        </div>
+
+        <div class="sidebar">
+            <h3>📖 使用说明</h3>
+
+            <h4>1️⃣ 获取 API Key</h4>
+            <p>访问 <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a>，登录后点击 "Create API
+                Key"，免费额度足够日常使用。</p>
+
+            <h4>2️⃣ 填写信息</h4>
+            <ul>
+                <li><strong>城市</strong>：如 "北京"、"上海"</li>
+                <li><strong>房源类型</strong>：如 "二手房"、"新房"</li>
+                <li><strong>小区</strong>：如 "龙博苑（三区）"</li>
+                <li><strong>发送对象</strong>：如 "经纪人"</li>
+                <li><strong>截图日期</strong>：默认今天，可改为 "01-25"</li>
+            </ul>
+
+            <h4>3️⃣ 上传截图</h4>
+            <p>支持 PNG、JPG、JPEG，最多 30 张。可拖拽或点击选择。</p>
+
+            <h4>4️⃣ 处理结果</h4>
+            <p>自动识别每张截图的对方姓名，按对话分组生成 TXT，打包下载 ZIP。</p>
+
+            <h4>📁 输出文件格式</h4>
+            <p>
+                图片：<code>城市-房源-小区-对象-姓名-序号.png</code><br>
+                文本：<code>城市-房源-小区-对象-姓名.txt</code>
+            </p>
         </div>
     </div>
 
