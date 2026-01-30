@@ -102,11 +102,11 @@ def get_today_full() -> str:
 # =============================================================================
 
 def detect_name_with_gemini(img_bytes: bytes, client) -> str:
-    """使用 Gemini 识别聊天截图中的对方姓名（仅返回姓名）"""
+    """使用 Gemini 识别聊天截图中的对方姓名（仅返回姓名，用最快的模型）"""
     try:
         img = Image.open(BytesIO(img_bytes))
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.0-flash-lite",  # 最快最便宜的模型，适合简单任务
             contents=[
                 "这是一个聊天截图。请识别屏幕顶部显示的对方姓名/昵称，只返回这个名字，不要返回任何其他内容。如果无法识别，返回'对方'。",
                 img
