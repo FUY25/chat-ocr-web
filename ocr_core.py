@@ -206,7 +206,7 @@ def ocr_images_with_gemini(
             print(f"警告: 无法加载图片 {filename}: {e}")
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-3-flash-preview",
         contents=contents
     )
 
