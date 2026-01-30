@@ -99,16 +99,24 @@ def detect_name_from_image(img_bytes: bytes) -> str:
     if LOCAL_OCR is None:
         return "对方姓名"
     
-    # 保存到临时文件
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
-        f.write(img_bytes)
-        temp_path = f.name
-    
+    temp_path = None
     try:
+        # 保存到临时文件
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+            f.write(img_bytes)
+            temp_path = f.name
+        
         results, _ = LOCAL_OCR(temp_path)
         return sanitize(pick_top_name(results), "对方姓名")
+    except Exception as e:
+        print(f"本地 OCR 失败，使用默认姓名: {e}")
+        return "对方姓名"
     finally:
-        os.unlink(temp_path)
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.unlink(temp_path)
+            except:
+                pass
 
 
 def ocr_images_with_gemini(
