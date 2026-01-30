@@ -2,11 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# 安装系统依赖（rapidocr 需要）
-RUN apt-get update && apt-get install -y \
+# 安装系统依赖（rapidocr + opencv + onnxruntime 需要）
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
     libgomp1 \
+    libgthread-2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # 安装 Python 依赖

@@ -94,29 +94,54 @@ def get_today_full() -> str:
 # OCR 处理
 # =============================================================================
 
-def detect_name_from_image(img_bytes: bytes) -> str:
-    """从图片中检测对方姓名"""
-    if LOCAL_OCR is None:
-        return "对方姓名"
-    
-    temp_path = None
+def detect_name_with_gemini(img_bytes: bytes, client) -> str:
+    """使用 Gemini 识别聊天截图中的对方姓名（仅返回姓名）"""
     try:
-        # 保存到临时文件
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
-            f.write(img_bytes)
-            temp_path = f.name
-        
-        results, _ = LOCAL_OCR(temp_path)
-        return sanitize(pick_top_name(results), "对方姓名")
+        img = Image.open(BytesIO(img_bytes))
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                "这是一个聊天截图。请识别屏幕顶部显示的对方姓名/昵称，只返回这个名字，不要返回任何其他内容。如果无法识别，返回'对方'。",
+                img
+            ]
+        )
+        name = response.text.strip()
+        # 清理可能的多余内容
+        name = name.split('\n')[0].strip()
+        return sanitize(name, "对方") if name else "对方"
     except Exception as e:
-        print(f"本地 OCR 失败，使用默认姓名: {e}")
-        return "对方姓名"
-    finally:
-        if temp_path and os.path.exists(temp_path):
-            try:
-                os.unlink(temp_path)
-            except:
-                pass
+        print(f"Gemini 姓名识别失败: {e}")
+        return "对方"
+
+
+def detect_name_from_image(img_bytes: bytes, gemini_client=None) -> str:
+    """从图片中检测对方姓名（优先本地 OCR，失败则用 Gemini）"""
+    # 尝试本地 OCR
+    if LOCAL_OCR is not None:
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+                f.write(img_bytes)
+                temp_path = f.name
+            
+            results, _ = LOCAL_OCR(temp_path)
+            name = sanitize(pick_top_name(results), "")
+            if name:
+                return name
+        except Exception as e:
+            print(f"本地 OCR 失败: {e}")
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                try:
+                    os.unlink(temp_path)
+                except:
+                    pass
+    
+    # Fallback: 使用 Gemini
+    if gemini_client:
+        return detect_name_with_gemini(img_bytes, gemini_client)
+    
+    return "对方"
 
 
 def ocr_images_with_gemini(
@@ -224,14 +249,28 @@ def process_ocr_workflow(
     total_images = len(images)
     report(f"开始处理 {total_images} 张图片", 0, total_images)
     
+    # 初始化 Gemini 客户端（用于 OCR 和可能的姓名识别 fallback）
+    report("正在连接 Gemini...", 0, total_images)
+    try:
+        client = genai.Client(api_key=api_key)
+    except Exception as e:
+        report(f"❌ Gemini 连接失败: {e}", 0, 0)
+        raise Exception(f"Gemini API 连接失败: {e}")
+    
     # 步骤1: 检测每张图片的对方姓名并重命名
-    report("正在识别对方姓名...", 0, total_images)
+    ocr_method = "本地识别" if LOCAL_OCR else "Gemini识别"
+    report(f"正在识别对方姓名（{ocr_method}）...", 0, total_images)
     
     renamed_images = []  # [(new_filename, bytes, person_name), ...]
     per_name_counter = {}
     
     for i, (orig_name, img_bytes) in enumerate(images):
-        person_name = detect_name_from_image(img_bytes)
+        try:
+            person_name = detect_name_from_image(img_bytes, gemini_client=client)
+        except Exception as e:
+            report(f"⚠️ 姓名识别异常: {e}", i + 1, total_images)
+            person_name = "对方"
+        
         order = per_name_counter.get(person_name, 0) + 1
         per_name_counter[person_name] = order
         
@@ -252,9 +291,6 @@ def process_ocr_workflow(
         groups[person_name].append((new_name, img_bytes))
     
     report(f"共 {len(groups)} 个对话", 0, len(groups))
-    
-    # 步骤3: 初始化 Gemini 客户端
-    client = genai.Client(api_key=api_key)
     
     # 步骤3: 对每组调用 Gemini 分析
     report("Gemini 正在分析聊天内容...", 0, len(groups))
