@@ -25,11 +25,18 @@ try:
 except ImportError:
     BEIJING_TZ = None
 
-try:
-    from rapidocr_onnxruntime import RapidOCR
-    LOCAL_OCR = RapidOCR()
-except ImportError:
-    LOCAL_OCR = None
+# 本地 OCR（可通过环境变量禁用，用于云端部署）
+LOCAL_OCR = None
+if os.environ.get('DISABLE_LOCAL_OCR', '').lower() not in ('1', 'true', 'yes'):
+    try:
+        from rapidocr_onnxruntime import RapidOCR
+        LOCAL_OCR = RapidOCR()
+        print("✅ 本地 OCR 已启用 (RapidOCR)")
+    except Exception as e:
+        print(f"⚠️ 本地 OCR 加载失败: {e}")
+        LOCAL_OCR = None
+else:
+    print("ℹ️ 本地 OCR 已禁用 (DISABLE_LOCAL_OCR=true)")
 
 
 # =============================================================================
